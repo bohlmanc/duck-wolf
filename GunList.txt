@@ -1,1 +1,4 @@
-1|Colt|Commander|Test|Test|Test|Test
+1|Colt|Commander|.45|6/5/15|Received this gun from Grandpa: need to legally transfer it when I turn 20.|Pistol|Need to Check
+1|Colt|Commander|.45|6/5/15|Received this gun from Grandpa: need to legally transfer it when I turn 20.|Pistol|Need to Check
+1|Colt|Commander|.45|6/5/15|Received this gun from Grandpa: need to legally transfer it when I turn 20.|Pistol|Need to Check
+1|Colt|Commander|.45|6/5/15|Received this gun from Grandpa: need to legally transfer it when I turn 20.|Pistol|Need to Check

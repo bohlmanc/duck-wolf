@@ -2,17 +2,18 @@
 
 public class Gun {
 
-	private String manufacturer,model,serial,caliber,acquired,notes;
+	private String manufacturer,model,serial,caliber,acquired,notes,type;
 
 	private int ID;
 
-	public Gun(String m, String mo, String s, String c, String a, String n, int id) {
+	public Gun(String m, String mo, String s, String c, String a, String n, String gtype,int id) {
 		manufacturer = m;
 		model = mo;
 		serial = s;
 		acquired = a;
 		caliber = c;
 		notes = n;
+		type=gtype;
 		ID = id;
 	}
 
@@ -24,6 +25,14 @@ public class Gun {
 		caliber = "";
 		notes = "";
 		ID = -1;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String t) {
+		type = t;
 	}
 
 	public String getManufacturer() {
@@ -54,9 +63,14 @@ public class Gun {
 		return ID;
 	}
 
+	public String getLabel() {
+		String outputString = "<html><p>"+type+"<br>"+manufacturer+" : "+model+"<br>"+"Caliber: "+caliber+"<br>"+"Serial #: "+serial+"<br>"+"Date Acquired: " + acquired + "<br>"+"Notes: "+notes;
+		return outputString;
+	}
+
 	public String toString() {
 		String outputString = "";
-		outputString += manufacturer + ": " + model + "\nSerial #: " + serial + " Caliber: " + caliber + "\nDate Acquired: " + acquired + "\nNotes: " + notes;
+		outputString += type + " - " + manufacturer + ": " + model + "\nSerial #: " + serial + " Caliber: " + caliber + "\nDate Acquired: " + acquired + "\nNotes: " + notes;
 		return outputString;
 	}
 }

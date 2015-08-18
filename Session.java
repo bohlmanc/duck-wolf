@@ -3,25 +3,35 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
+import java.util.*;
 
 public class Session {
 
 	private JFrame frame;
 	private static ArrayList<Gun> list;
 
-	public Session() throws IOException, BadLocationException{
+	public Session() throws IOException, BadLocationException {
 		list = new ArrayList<Gun>();
+		JPanel mainPanel = new JPanel();
+		//mainPanel.setPreferredSize(new Dimension(1200,800));
+		JScrollPane scrollPane = new JScrollPane(mainPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+		mainPanel.setLayout(new GridLayout(list.size(),2));
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		//scrollPane.setBounds(0,0,1000,700);
+		//scrollPane.setVerticalScrollBar(scrollPane.createVerticalScrollBar());
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("GunList.txt"));
 			
 			String line = br.readLine();
 			while(line != null) {
-				System.out.println("NEW GUN");
+				//System.out.println("NEW GUN");
 				String[] curLine = line.split("\\|");
-				Gun newGun = new Gun(curLine[1],curLine[2],curLine[6],curLine[3],curLine[4],curLine[5],Integer.parseInt(curLine[0]));
-				System.out.println(newGun.toString());
+				Gun newGun = new Gun(curLine[1],curLine[2],curLine[7],curLine[3],curLine[4],curLine[5],curLine[6],Integer.parseInt(curLine[0]));
+				//System.out.println(newGun.toString());
 				list.add(newGun);
 				line = br.readLine();
 			}
@@ -33,8 +43,7 @@ public class Session {
 		}
 		
 		frame = new JFrame("Gun List");
-		frame.setLayout(new FlowLayout());
-		frame.setSize(1000,400);
+		frame.setSize(1200,800);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -43,7 +52,7 @@ public class Session {
 			JPanel gunPanel = new JPanel();
 			gunPanel.setLayout(new FlowLayout());
 
-			JLabel label = new JLabel(gun.toString());
+			JLabel label = new JLabel(gun.getLabel());
 			JButton edit = new JButton();
 			edit.addActionListener(new java.awt.event.ActionListener() {
                     @Override
@@ -55,9 +64,8 @@ public class Session {
 			edit.setText("Edit");
 
 			gunPanel.add(label);
-			System.out.println("+++LABEL+++\n"+label.getText());
 			gunPanel.add(edit);
-			frame.add(gunPanel);
+			mainPanel.add(gunPanel);
 		}
 
 		JPanel addPanel = new JPanel();
@@ -67,12 +75,12 @@ public class Session {
 			@Override
 			// When clicked, open window to add a new gun
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	editGun(new Gun());
+            	editGun(new Gun("Test","Test","Test","Test","Test","Test","Select Type",-1));
             }
 
 		});
 		addPanel.add(addGun);
-		frame.add(addPanel);
+		mainPanel.add(addPanel);
 
 		JPanel savePanel = new JPanel();
 		JButton saveButton = new JButton();
@@ -91,8 +99,9 @@ public class Session {
 		});
 		savePanel.add(saveButton);
 
-		frame.add(addPanel);
-		frame.add(savePanel);
+		mainPanel.add(addPanel);
+		mainPanel.add(savePanel);
+		frame.add(mainPanel);
 		frame.setVisible(true);
 	}
 
@@ -102,6 +111,16 @@ public class Session {
 		boolean newGun = false;
 		final JFrame editFrame = new JFrame("Edit gun");
 		editFrame.setLayout(new FlowLayout());
+
+		final Map<String,String> dict = new HashMap<String,String>();
+
+		dict.put("manufacturer",gun.getManufacturer());
+		dict.put("model",gun.getModel());
+		dict.put("serial",gun.getSerial());
+		dict.put("caliber",gun.getCaliber());
+		dict.put("date",gun.getAcquired());
+		dict.put("notes",gun.getNotes());
+		dict.put("type",gun.getType());
 
 		// Add the ID number to the Frame. Can't be changed.
 		JPanel idPanel = new JPanel();
@@ -118,6 +137,34 @@ public class Session {
 		idPanel.add(gunID);
 		editFrame.add(idPanel);
 
+		JPanel typePanel = new JPanel();
+		String[] typeList = {"Select Type","Rifle","Pistol","Shotgun"};
+		JComboBox<String> gunType = new JComboBox<String>(typeList);
+		int index = 0;
+		if(gun.getType().equalsIgnoreCase("Rifle")) {
+			gunType.setSelectedIndex(1);
+		}
+		else if(gun.getType().equalsIgnoreCase("Pistol")) {
+			gunType.setSelectedIndex(2);
+		}
+		else if(gun.getType().equalsIgnoreCase("Shotgun")) {
+			gunType.setSelectedIndex(3);
+		}
+		else{
+			gunType.setSelectedIndex(0);
+		}
+		gunType.addActionListener(new java.awt.event.ActionListener() {
+		    @Override
+		    public void actionPerformed(java.awt.event.ActionEvent event) {
+		        JComboBox<String> combo = (JComboBox<String>) event.getSource();
+		        String selectedType = (String) combo.getSelectedItem();
+		 
+		        dict.put("type",selectedType);
+		    }
+		});
+		typePanel.add(gunType);
+		editFrame.add(typePanel);
+
 		// Adds the manufacturer to the Frame. 
 		JPanel manufacturerPanel = new JPanel();
 		manufacturerPanel.add(new JLabel("Manufacturer"));
@@ -131,7 +178,7 @@ public class Session {
 			}
 			public void insertUpdate(DocumentEvent e) {
 			try{
-					manufacturerField.setText(e.getDocument().getText(0,e.getDocument().getLength()));
+					dict.put("manufacturer",(e.getDocument().getText(0,e.getDocument().getLength())));
 				}
 				catch(BadLocationException ex) {
 
@@ -154,8 +201,7 @@ public class Session {
 			}
 			public void insertUpdate(DocumentEvent e) {
 			try{
-					String newString = e.getDocument().getText(0,e.getDocument().getLength()-1);
-					System.out.println("_---090"+newString);
+					dict.put("model",e.getDocument().getText(0,e.getDocument().getLength()));
 				}
 				catch(BadLocationException ex) {
 
@@ -178,8 +224,7 @@ public class Session {
 			}
 			public void insertUpdate(DocumentEvent e) {
 			try{
-					String newString = e.getDocument().getText(0,e.getDocument().getLength()-1);
-					System.out.println("_---090"+newString);
+					dict.put("caliber",e.getDocument().getText(0,e.getDocument().getLength()));
 				}
 				catch(BadLocationException ex) {
 
@@ -193,7 +238,22 @@ public class Session {
 		JPanel datePanel = new JPanel();
 		datePanel.add(new JLabel("Date Acquired"));
 		JTextField dateField = new JTextField(gun.getAcquired(),50);
-		dateField.setSize(30,60);
+		dateField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+			System.out.println("DID SOMETHING");
+			}
+			public void removeUpdate(DocumentEvent e) {
+			// text was deleted
+			}
+			public void insertUpdate(DocumentEvent e) {
+			try{
+					dict.put("date",e.getDocument().getText(0,e.getDocument().getLength()));
+				}
+				catch(BadLocationException ex) {
+
+				}
+			}
+			});
 		datePanel.add(dateField);
 		editFrame.add(datePanel);
 
@@ -210,14 +270,15 @@ public class Session {
 			}
 			public void insertUpdate(DocumentEvent e) {
 			try{
-					String newString = e.getDocument().getText(0,e.getDocument().getLength()-1);
-					System.out.println("_---090"+newString);
+					dict.put("serial",e.getDocument().getText(0,e.getDocument().getLength()));
+					System.out.println(e.getDocument().getText(0,e.getDocument().getLength()));
+					System.out.println("IS SUPPOSED TO BE "+dict.get("serial"));
 				}
 				catch(BadLocationException ex) {
 
 				}
 			}
-			});
+		});
 		serialPanel.add(serialField);
 		editFrame.add(serialPanel);
 
@@ -227,22 +288,14 @@ public class Session {
 		JTextField notesField = new JTextField(gun.getNotes(),100);
 		notesField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				try{
-					String newString = e.getDocument().getText(0,e.getDocument().getLength()-1);
-					System.out.println("_---090"+newString);
-				}
-				catch(BadLocationException ex) {
-
-				}
-				
+			System.out.println("DID SOMETHING");
 			}
 			public void removeUpdate(DocumentEvent e) {
 			// text was deleted
 			}
 			public void insertUpdate(DocumentEvent e) {
-				try{
-					String newString = e.getDocument().getText(0,e.getDocument().getLength()-1);
-					System.out.println("_---090"+newString);
+			try{
+					dict.put("notes",e.getDocument().getText(0,e.getDocument().getLength()));
 				}
 				catch(BadLocationException ex) {
 
@@ -252,12 +305,15 @@ public class Session {
 		notesPanel.add(notesField);
 		editFrame.add(notesPanel);
 
-		final String man = manufacturerField.getText();
-		final String model = modelField.getText();
-		final String caliber = caliberField.getText();
-		final String date = dateField.getText();
-		final String serial = serialField.getText();
-		final String notes  = notesField.getText();
+		final String man = dict.get("manufacturer");
+		final String model = dict.get("model");
+		final String caliber = dict.get("caliber");
+		final String date = dict.get("date");
+		final String serial = dict.get("serial");
+		final String notes  = dict.get("notes");
+		final String type = dict.get("type");
+
+		System.out.println("BLAHBLAH"+man+model+caliber+date+serial+notes);
 
 		final int id = Integer.parseInt(gunID.getText());
 
@@ -267,21 +323,40 @@ public class Session {
 		submit.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				Gun newGun = new Gun(man,model,serial,caliber,date,notes,id);
+				final String man = dict.get("manufacturer");
+				final String model = dict.get("model");
+				final String caliber = dict.get("caliber");
+				final String date = dict.get("date");
+				final String serial = dict.get("serial");
+				final String notes  = dict.get("notes");
+				final String type = dict.get("type");
+				Gun newGun = new Gun(man,model,serial,caliber,date,notes,type,id);
+				if(isNew) {
+					System.out.println("NEW GUN");
+					list.add(newGun);
+				}
 				int index = 0;
 				for(Gun g: list) {
-					System.out.println("Searching for gun..");
-					if(isNew) {
-						list.add(g);
-					}
-					else if(g.getSerial().equalsIgnoreCase(curGun.getSerial())) {
-						System.out.println("Gun FOUND!");
+					//System.out.println("Searching for gun..");
+					if(g.getSerial().equalsIgnoreCase(curGun.getSerial())) {
+						//System.out.println("Gun FOUND!");
 						list.set(index,newGun);
 					}
 					index = index+1;
 				}
-				editFrame.setVisible(false);
-				editFrame.dispose();
+				try{
+					save();
+				}
+				catch(IOException e) {
+
+				}
+				finally{
+					editFrame.setVisible(false);
+					editFrame.dispose();
+				}
+				
+
+				//frame.repaint();
 			}
 		}); 
 		editFrame.add(submit);
@@ -293,14 +368,29 @@ public class Session {
 		try {
 			PrintWriter writer = new PrintWriter("GunList.txt","UTF-8");
 			for(Gun gun: list) {
-				writer.println(gun.getID()+"|"+gun.getManufacturer()+"|"+gun.getModel()+"|"+gun.getCaliber()+"|"+gun.getAcquired()+"|"+gun.getNotes()+"|"+gun.getSerial());
+				writer.println(gun.getID()+"|"+gun.getManufacturer()+"|"+gun.getModel()+"|"+gun.getCaliber()+"|"+gun.getAcquired()+"|"+gun.getNotes()+"|"+gun.getType()+"|"+gun.getSerial());
 				System.out.println("SAVED GUN IS\n"+gun.toString());
 			}
-			JOptionPane.showMessageDialog(null,"File saved as GunList.txt","Save Message",JOptionPane.INFORMATION_MESSAGE);
 			writer.close();
+			
 		}
 		catch(IOException e) {
 			JOptionPane.showMessageDialog(null, "ERROR IN FILE WRITE", "ERROR MESSAGE", JOptionPane.INFORMATION_MESSAGE);
+		}
+		finally{
+			JOptionPane.showMessageDialog(null,"File saved as GunList.txt","Save Message",JOptionPane.INFORMATION_MESSAGE);
+			frame.repaint();
+			//frame.setVisible(false);
+			//frame.dispose();
+			/**try{
+				new Session();
+
+			}
+			catch(BadLocationException e) {
+
+			}**/
+			
+			
 		}
 	}
     
