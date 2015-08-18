@@ -82,6 +82,7 @@ public class Session {
 		addPanel.add(addGun);
 		mainPanel.add(addPanel);
 
+		/*
 		JPanel savePanel = new JPanel();
 		JButton saveButton = new JButton();
 		saveButton.setText("save");
@@ -97,10 +98,12 @@ public class Session {
 				
 			}
 		});
-		savePanel.add(saveButton);
+		savePanel.add(saveButton); 
+				mainPanel.add(savePanel);**/
+		
 
 		mainPanel.add(addPanel);
-		mainPanel.add(savePanel);
+
 		frame.add(mainPanel);
 		frame.setVisible(true);
 	}
@@ -378,20 +381,14 @@ public class Session {
 			JOptionPane.showMessageDialog(null, "ERROR IN FILE WRITE", "ERROR MESSAGE", JOptionPane.INFORMATION_MESSAGE);
 		}
 		finally{
-			JOptionPane.showMessageDialog(null,"File saved as GunList.txt","Save Message",JOptionPane.INFORMATION_MESSAGE);
-			frame.repaint();
-			//frame.setVisible(false);
-			//frame.dispose();
-			/**try{
+			frame.setVisible(false);
+			frame.dispose();
+			try{
 				new Session();
-
 			}
 			catch(BadLocationException e) {
 
-			}**/
-			
-			
+			}
 		}
 	}
-    
 }
