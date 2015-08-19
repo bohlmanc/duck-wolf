@@ -1,4 +1,5 @@
 
+// Created by Theballzman. All rights reserved.
 
 public class Gun {
 

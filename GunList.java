@@ -1,3 +1,6 @@
+
+// Created by Theballzman. All rights reserved.
+
 import java.io.*;
 import javax.swing.text.BadLocationException;
 
