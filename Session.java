@@ -30,7 +30,7 @@ public class Session {
 			String line = br.readLine();
 			while(line != null) {
 				String[] curLine = line.split("\\|");
-				Gun newGun = new Gun(curLine[1],curLine[2],curLine[7],curLine[3],curLine[4],curLine[5],curLine[6],Integer.parseInt(curLine[0]));
+				Gun newGun = new Gun(curLine[1],curLine[2],curLine[8],curLine[3],curLine[4],curLine[5],curLine[6],curLine[7],Integer.parseInt(curLine[0]));
 				list.add(newGun);
 				line = br.readLine();
 			}
@@ -47,7 +47,6 @@ public class Session {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		for(final Gun gun: list) {
-			System.out.println("========GUN========");
 			JPanel gunPanel = new JPanel();
 			gunPanel.setSize(new Dimension(450,100));
 			gunPanel.setLayout(new FlowLayout());
@@ -74,7 +73,7 @@ public class Session {
 			@Override
 			// When clicked, open window to add a new gun
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	editGun(new Gun("Test","Test","Test","Test","Test","Test","Select Type",-1));
+            	editGun(new Gun("Test","Test","Test","Test","Test","Test","Select Type","Select Condition",-1));
             }
 		});
 
@@ -101,6 +100,7 @@ public class Session {
 		dict.put("date",gun.getAcquired());
 		dict.put("notes",gun.getNotes());
 		dict.put("type",gun.getType());
+		dict.put("condition",gun.getCondition());
 
 		// Add the ID number to the Frame. Can't be changed.
 		JPanel idPanel = new JPanel();
@@ -146,6 +146,46 @@ public class Session {
 		});
 		typePanel.add(gunType);
 		editFrame.add(typePanel);
+
+		JPanel conditionPanel = new JPanel();
+		String[] conditionList = {"Select Condition","Poor","Below Average","Average","Good","Like New","New"};
+		JComboBox<String> gunCondition = new JComboBox<String>(conditionList);
+
+		if(gun.getCondition().equalsIgnoreCase("Poor")) {
+			gunCondition.setSelectedIndex(1);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("Below Average")) {
+			gunCondition.setSelectedIndex(2);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("Shotgun")) {
+			gunCondition.setSelectedIndex(3);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("Average")) {
+			gunCondition.setSelectedIndex(4);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("Good")) {
+			gunCondition.setSelectedIndex(5);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("Like New")) {
+			gunCondition.setSelectedIndex(6);
+		}
+		else if(gun.getCondition().equalsIgnoreCase("New")) {
+			gunCondition.setSelectedIndex(7);
+		}
+		else{
+			gunCondition.setSelectedIndex(0);
+		}
+		gunCondition.addActionListener(new java.awt.event.ActionListener() {
+		    @Override
+		    public void actionPerformed(java.awt.event.ActionEvent event) {
+		        JComboBox<String> combo = (JComboBox<String>) event.getSource();
+		        String selectedCondition = (String) combo.getSelectedItem();
+		 
+		        dict.put("condition",selectedCondition);
+		    }
+		});
+		conditionPanel.add(gunCondition);
+		editFrame.add(conditionPanel);
 
 		// Adds the manufacturer to the Frame. 
 		JPanel manufacturerPanel = new JPanel();
@@ -195,16 +235,6 @@ public class Session {
 		notesPanel.add(notesField);
 		editFrame.add(notesPanel);
 
-		//final String man = dict.get("manufacturer");
-		//final String model = dict.get("model");
-		//final String caliber = dict.get("caliber");
-		//final String date = dict.get("date");
-		//final String serial = dict.get("serial");
-		//final String notes  = dict.get("notes");
-		//final String type = dict.get("type");
-
-		//System.out.println("BLAHBLAH"+man+model+caliber+date+serial+notes);
-
 		final int id = Integer.parseInt(gunID.getText());
 
 		JButton submit = new JButton();
@@ -220,16 +250,15 @@ public class Session {
 				final String serial = dict.get("serial");
 				final String notes  = dict.get("notes");
 				final String type = dict.get("type");
-				Gun newGun = new Gun(man,model,serial,caliber,date,notes,type,id);
+				final String condition = dict.get("condition");
+				Gun newGun = new Gun(man,model,serial,caliber,date,notes,type,condition,id);
 				if(isNew) {
 					System.out.println("NEW GUN");
 					list.add(newGun);
 				}
 				int index = 0;
 				for(Gun g: list) {
-					//System.out.println("Searching for gun..");
 					if(g.getSerial().equalsIgnoreCase(curGun.getSerial())) {
-						//System.out.println("Gun FOUND!");
 						list.set(index,newGun);
 					}
 					index = index+1;
@@ -255,7 +284,7 @@ public class Session {
 		try {
 			PrintWriter writer = new PrintWriter("GunList.txt","UTF-8");
 			for(Gun gun: list) {
-				writer.println(gun.getID()+"|"+gun.getManufacturer()+"|"+gun.getModel()+"|"+gun.getCaliber()+"|"+gun.getAcquired()+"|"+gun.getNotes()+"|"+gun.getType()+"|"+gun.getSerial());
+				writer.println(gun.getID()+"|"+gun.getManufacturer()+"|"+gun.getModel()+"|"+gun.getCaliber()+"|"+gun.getAcquired()+"|"+gun.getNotes()+"|"+gun.getType()+"|"+gun.getCondition()+"|"+gun.getSerial());
 				System.out.println("SAVED GUN IS\n"+gun.toString());
 			}
 			writer.close();
@@ -279,7 +308,6 @@ public class Session {
 	public void addDocListener(Document field,final String searchString,final HashMap<String,String> oldMap) {
 		field.addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				System.out.println("DID SOMETHING");
 			}
 			public void removeUpdate(DocumentEvent e) {
 				// text was deleted

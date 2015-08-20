@@ -3,11 +3,11 @@
 
 public class Gun {
 
-	private String manufacturer,model,serial,caliber,acquired,notes,type;
+	private String manufacturer,model,serial,caliber,acquired,notes,condition,type;
 
 	private int ID;
 
-	public Gun(String m, String mo, String s, String c, String a, String n, String gtype,int id) {
+	public Gun(String m, String mo, String s, String c, String a, String n, String gtype,String cond,int id) {
 		manufacturer = m;
 		model = mo;
 		serial = s;
@@ -15,6 +15,7 @@ public class Gun {
 		caliber = c;
 		notes = n;
 		type=gtype;
+		condition = cond;
 		ID = id;
 	}
 
@@ -25,7 +26,12 @@ public class Gun {
 		acquired = "";
 		caliber = "";
 		notes = "";
+		condition = "";
 		ID = -1;
+	}
+
+	public String getCondition() {
+		return condition;
 	}
 
 	public String getType() {
@@ -65,7 +71,7 @@ public class Gun {
 	}
 
 	public String getLabel() {
-		String outputString = "<html><p>"+type+"<br>"+manufacturer+" : "+model+"<br>"+"Caliber: "+caliber+"<br>"+"Serial #: "+serial+"<br>"+"Date Acquired: " + acquired + "<br>"+"Notes: "+notes;
+		String outputString = "<html><p>"+type+"<br>"+manufacturer+" : "+model+"<br>Condition: "+condition+"<br>Caliber: "+caliber+"<br>"+"Serial #: "+serial+"<br>"+"Date Acquired: " + acquired + "<br>"+"Notes: "+notes;
 		return outputString;
 	}
 

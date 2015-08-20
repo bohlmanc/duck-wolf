@@ -1,3 +1,1 @@
-1|Colt|Commander|.45|6/5/15|Received this gun from Grandpa: need to legally transfer it when I turn 20.|Pistol|12321
-8|Remington|870|12|5/4/14|This is a sample gun. Now I have changed the notes.|Shotgun|12
-3|Remington|R700|.308|8/17/15|Got this gun from RifleGear. Great gun, shoot fine.|Rifle|452003
+1|Colt|Commander|.45|8/20/15|One of the first guns made! Shoots great, clean after every use.|Pistol|Good|5489
